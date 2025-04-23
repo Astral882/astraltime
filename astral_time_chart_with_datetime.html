@@ -1,0 +1,116 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>Astral Time 红利浮动图表</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+    #header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #time {
+      font-size: 14px;
+      color: #555;
+    }
+    canvas {
+      max-width: 100%;
+    }
+    h2 {
+      color: #333;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="header">
+    <h2>Astral Time 红利浮动图表</h2>
+    <div id="time">当前时间：</div>
+  </div>
+
+  <canvas id="bonusChart" height="100"></canvas>
+
+  <script>
+    function updateTime() {
+      const now = new Date();
+      const timeStr = now.getFullYear() + '-' +
+                      String(now.getMonth() + 1).padStart(2, '0') + '-' +
+                      String(now.getDate()).padStart(2, '0') + ' ' +
+                      String(now.getHours()).padStart(2, '0') + ':' +
+                      String(now.getMinutes()).padStart(2, '0') + ':' +
+                      String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('time').textContent = '当前时间：' + timeStr;
+    }
+    setInterval(updateTime, 1000);
+    updateTime();
+
+    const ctx = document.getElementById('bonusChart').getContext('2d');
+    const labels = [];
+    const dataPoints = [];
+
+    function getCurrentTimeLabel() {
+      const now = new Date();
+      return now.toTimeString().split(' ')[0];
+    }
+
+    function generateBonusValue() {
+      const date = new Date();
+      const day = date.getDate();
+      if (day === 14 || day === 15 || day === 29 || day === 30) {
+        return (Math.random() * (1.3 - 0.7) + 0.7).toFixed(3);
+      } else {
+        return (Math.random() * (3.9 - 3.0) + 3.0).toFixed(3);
+      }
+    }
+
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: '红利浮动值',
+          data: dataPoints,
+          borderColor: 'rgba(75, 192, 192, 1)',
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: {
+        scales: {
+          x: {
+            title: { display: true, text: '时间' }
+          },
+          y: {
+            title: { display: true, text: '红利浮动值' },
+            min: 0,
+            max: 5
+          }
+        }
+      }
+    });
+
+    function updateChart() {
+      const timeLabel = getCurrentTimeLabel();
+      const bonus = generateBonusValue();
+      if (labels.length >= 20) {
+        labels.shift();
+        dataPoints.shift();
+      }
+      labels.push(timeLabel);
+      dataPoints.push(bonus);
+      chart.update();
+    }
+
+    updateChart();
+    setInterval(updateChart, 300000); // 每5分钟更新一次
+  </script>
+</body>
+</html>
