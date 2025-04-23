@@ -1,0 +1,144 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>Astral Time 红利浮动图表</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f9f9f9;
+      text-align: center;
+    }
+    #time {
+      font-size: 16px;
+      color: #444;
+      margin-bottom: 10px;
+    }
+    canvas {
+      max-width: 100%;
+    }
+    h2 {
+      color: #222;
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Astral Time 红利浮动图表</h2>
+  <div id="time">当前时间：</div>
+  <canvas id="bonusChart" height="100"></canvas>
+
+  <script>
+    function updateTime() {
+      const now = new Date();
+      const timeStr = now.getFullYear() + '-' +
+                      String(now.getMonth() + 1).padStart(2, '0') + '-' +
+                      String(now.getDate()).padStart(2, '0') + ' ' +
+                      String(now.getHours()).padStart(2, '0') + ':' +
+                      String(now.getMinutes()).padStart(2, '0') + ':' +
+                      String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('time').textContent = '当前时间：' + timeStr;
+    }
+    setInterval(updateTime, 1000);
+    updateTime();
+
+    const bonusRanges = {
+  "2025-04-01": [2.82, 3.77],
+  "2025-04-02": [2.52, 3.7],
+  "2025-04-03": [2.96, 3.62],
+  "2025-04-04": [2.78, 3.27],
+  "2025-04-05": [2.79, 3.5],
+  "2025-04-06": [3.06, 3.9],
+  "2025-04-07": [2.61, 3.89],
+  "2025-04-08": [2.94, 3.88],
+  "2025-04-09": [2.69, 3.76],
+  "2025-04-10": [2.63, 3.34],
+  "2025-04-11": [2.68, 3.86],
+  "2025-04-12": [2.62, 3.57],
+  "2025-04-13": [2.53, 3.69],
+  "2025-04-14": [0.81, 1.25],
+  "2025-04-15": [0.75, 1.25],
+  "2025-04-16": [2.89, 3.5],
+  "2025-04-17": [2.9, 3.24],
+  "2025-04-18": [2.54, 3.62],
+  "2025-04-19": [2.94, 3.8],
+  "2025-04-20": [2.67, 3.83],
+  "2025-04-21": [2.82, 3.58],
+  "2025-04-22": [2.81, 3.31],
+  "2025-04-23": [2.91, 3.76],
+  "2025-04-24": [3.02, 3.38],
+  "2025-04-25": [3.07, 3.82],
+  "2025-04-26": [3.08, 3.41],
+  "2025-04-27": [2.82, 3.58],
+  "2025-04-28": [2.99, 3.82],
+  "2025-04-29": [0.75, 1.2],
+  "2025-04-30": [0.95, 1.22],
+};
+
+    function generateBonusValue() {
+      const today = new Date();
+      const key = today.toISOString().split('T')[0];
+      const range = bonusRanges[key];
+      if (range) {
+        return (Math.random() * (range[1] - range[0]) + range[0]).toFixed(3);
+      } else {
+        return (Math.random() * (3.0 - 2.5) + 2.5).toFixed(3);
+      }
+    }
+
+    const ctx = document.getElementById('bonusChart').getContext('2d');
+    const labels = [];
+    const dataPoints = [];
+
+    function getCurrentTimeLabel() {
+      const now = new Date();
+      return now.toTimeString().split(' ')[0];
+    }
+
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: '红利浮动值',
+          data: dataPoints,
+          borderColor: 'rgba(75, 192, 192, 1)',
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: {
+        scales: {
+          x: {
+            title: { display: true, text: '时间' }
+          },
+          y: {
+            title: { display: true, text: '红利浮动值' },
+            min: 0,
+            max: 5
+          }
+        }
+      }
+    });
+
+    function updateChart() {
+      const timeLabel = getCurrentTimeLabel();
+      const bonus = generateBonusValue();
+      if (labels.length >= 20) {
+        labels.shift();
+        dataPoints.shift();
+      }
+      labels.push(timeLabel);
+      dataPoints.push(bonus);
+      chart.update();
+    }
+
+    updateChart();
+    setInterval(updateChart, 300000); // 每5分钟更新一次
+  </script>
+</body>
+</html>
