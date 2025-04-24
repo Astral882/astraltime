@@ -1,0 +1,105 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>Astral Time 实时红利走势（当前小时生成）</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f9f9f9;
+      text-align: center;
+    }
+    #time {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 20px;
+    }
+    h2 {
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Astral Time 实时红利走势</h2>
+  <div id="time">当前时间：</div>
+  <canvas id="bonusChart" height="100"></canvas>
+
+  <script>
+    function updateTime() {
+      const now = new Date();
+      const str = now.getFullYear() + '-' +
+                  String(now.getMonth() + 1).padStart(2, '0') + '-' +
+                  String(now.getDate()).padStart(2, '0') + ' ' +
+                  String(now.getHours()).padStart(2, '0') + ':' +
+                  String(now.getMinutes()).padStart(2, '0') + ':' +
+                  String(now.getSeconds()).padStart(2, '0');
+      document.getElementById("time").textContent = "当前时间：" + str;
+    }
+    setInterval(updateTime, 1000);
+    updateTime();
+
+    const now = new Date();
+    const currentHour = now.getHours();
+    const day = now.getDate();
+
+    const labels = [];
+    const data = [];
+
+    for (let h = 0; h <= currentHour; h++) {
+      labels.push((h < 10 ? "0" + h : h) + ":00");
+
+      let value;
+      if ([14, 15, 29, 30].includes(day)) {
+        const low = Math.random() * (0.6 - 0.3) + 0.3;
+        const high = Math.random() * (1.2 - 0.8) + 0.8;
+        value = h % 3 === 0 ? high : (h % 2 === 0 ? low : (Math.random() * (1.2 - 0.7) + 0.7));
+      } else {
+        const low = Math.random() * (1.8 - 1.2) + 1.2;
+        const high = Math.random() * (3.9 - 3.4) + 3.4;
+        value = h % 3 === 0 ? high : (h % 2 === 0 ? low : (Math.random() * (2.9 - 2.1) + 2.1));
+      }
+
+      data.push(parseFloat(value.toFixed(3)));
+    }
+
+    const ctx = document.getElementById('bonusChart').getContext('2d');
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: '红利浮动值',
+          data: data,
+          borderColor: 'rgba(75, 192, 192, 1)',
+          backgroundColor: 'rgba(75, 192, 192, 0.15)',
+          pointRadius: 4,
+          borderWidth: 2,
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: '时间（小时）'
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: '红利值'
+            },
+            min: 0,
+            max: 4
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
