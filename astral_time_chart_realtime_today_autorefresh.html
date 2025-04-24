@@ -1,0 +1,80 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>实时红利走势（每小时更新）</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f9f9f9;
+      text-align: center;
+    }
+    #time {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 20px;
+    }
+    h2 {
+      margin-bottom: 5px;
+    }
+  </style>
+
+  <script>
+    // 每小时自动刷新页面（整点后1分钟执行）
+    const now = new Date();
+    const nextHour = new Date();
+    nextHour.setHours(now.getHours() + 1, 1, 0, 0); // 下一小时的01分00秒
+    const delay = nextHour - now;
+
+    setTimeout(() => {
+      location.reload();
+    }, delay);
+  </script>
+</head>
+<body>
+  <h2>Astral Time 实时红利走势</h2>
+  <div id="time">当前时间：2025-04-24 10:00:00</div>
+  <canvas id="bonusChart" height="100"></canvas>
+
+  <script>
+    const ctx = document.getElementById('bonusChart').getContext('2d');
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ["00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00"],
+        datasets: [{
+          label: '红利浮动值',
+          data: [3.725, 2.313, 1.205, 3.524, 1.237, 2.161, 3.557, 2.494, 1.412, 3.877, 1.236],
+          borderColor: 'rgba(75, 192, 192, 1)',
+          backgroundColor: 'rgba(75, 192, 192, 0.15)',
+          pointRadius: 4,
+          borderWidth: 2,
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: '时间（小时）'
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: '红利值'
+            },
+            min: 0,
+            max: 4
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
