@@ -1,0 +1,33 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Astral Time - Investor Application</title>
+  <style>
+    body { background: #0f0f0f; color: #f8f8f8; font-family: 'Noto Sans', sans-serif; padding: 20px; }
+    h1 { color: gold; }
+    input, textarea { display: block; width: 100%; margin-bottom: 10px; padding: 10px; background: #1e1e1e; border: 1px solid #333; color: white; }
+    button { background: gold; color: black; padding: 10px 20px; border: none; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>Astral Time - Investor Application</h1>
+  <form>
+    <input type="text" placeholder="Full Name" required />
+    <input type="text" placeholder="Country" required />
+    <input type="text" placeholder="Telegram ID" required />
+    <input type="text" placeholder="Phone Number" required />
+    <input type="email" placeholder="Email" required />
+    <input type="text" placeholder="Estimated Investment Amount" required />
+    <input type="text" placeholder="Introducer Code" required />
+    <label>Upload Identity Document:</label>
+    <input type="file" accept="image/*" capture="environment" required />
+    <label>Upload Face Photograph:</label>
+    <input type="file" accept="image/*" capture="user" required />
+    <textarea placeholder="Additional Notes (optional)"></textarea>
+    <button type="submit">Submit</button>
+  </form>
+</body>
+</html>
