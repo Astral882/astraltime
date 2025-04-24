@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Investor Application (Blacklist Check)</title>
+  <style>
+    body { background: #111; color: white; font-family: Arial; padding: 20px; }
+    input, button { padding: 10px; margin: 10px 0; width: 100%; max-width: 400px; }
+    #result { margin-top: 20px; font-weight: bold; color: red; }
+    label { display: block; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Investor Application (with Face Blacklist Check)</h1>
+  <form id="investorForm" onsubmit="return checkFaceToken(event)">
+    <input type="text" placeholder="Full Name" required><br>
+    <input type="email" placeholder="Email" required><br>
+    <label>Upload ID:</label>
+    <input type="file" required><br>
+
+    <label>Upload Face Photo (Required):</label>
+    <input type="file" id="facePhoto" accept="image/*" required><br>
+
+    <button type="submit">Submit</button>
+    <div id="result"></div>
+  </form>
+
+  <script>
+    async function checkFaceToken(event) {
+      event.preventDefault();
+      const resultDiv = document.getElementById('result');
+      const file = document.getElementById('facePhoto').files[0];
+      if (!file) {
+        resultDiv.innerText = "Please upload a face photo.";
+        return false;
+      }
+
+      resultDiv.innerText = "Checking face...";
+
+      const formData = new FormData();
+      formData.append("api_key", "V2E7Fw194WeXnY34Vf5caVjPVPStfDPU");
+      formData.append("api_secret", "4air9mNevxtAVmcsgqfmURHNeNrhaQtl");
+      formData.append("image_file", file);
+
+      try {
+        const detectRes = await fetch("https://api-us.faceplusplus.com/facepp/v3/detect", {
+          method: "POST",
+          body: formData
+        });
+        const detectData = await detectRes.json();
+        if (!detectData.faces || detectData.faces.length === 0) {
+          resultDiv.innerText = "No face detected.";
+          return false;
+        }
+
+        const faceToken = detectData.faces[0].face_token;
+
+        const searchData = new FormData();
+        searchData.append("api_key", "V2E7Fw194WeXnY34Vf5caVjPVPStfDPU");
+        searchData.append("api_secret", "4air9mNevxtAVmcsgqfmURHNeNrhaQtl");
+        searchData.append("outer_id", "astral_blacklist");
+        searchData.append("face_token", faceToken);
+
+        const searchRes = await fetch("https://api-us.faceplusplus.com/facepp/v3/search", {
+          method: "POST",
+          body: searchData
+        });
+
+        const searchJson = await searchRes.json();
+        if (searchJson.results && searchJson.results.length > 0 && searchJson.results[0].confidence > 80) {
+          resultDiv.innerText = "You are blacklisted. Application blocked.";
+          return false;
+        }
+
+        resultDiv.style.color = "green";
+        resultDiv.innerText = "No blacklist detected. Form submitted!";
+        setTimeout(() => document.getElementById('investorForm').submit(), 1000);
+      } catch (e) {
+        console.error(e);
+        resultDiv.innerText = "Error during face check.";
+      }
+
+      return false;
+    }
+  </script>
+</body>
+</html>
