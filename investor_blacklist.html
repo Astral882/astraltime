@@ -3,26 +3,45 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Investor Application (Blacklist Check)</title>
+  <title>Investor Application Form (中英双语)</title>
   <style>
     body { background: #111; color: white; font-family: Arial; padding: 20px; }
-    input, button { padding: 10px; margin: 10px 0; width: 100%; max-width: 400px; }
+    input, button, select { padding: 10px; margin: 10px 0; width: 100%; max-width: 400px; }
+    label { display: block; margin-top: 15px; text-align: left; }
     #result { margin-top: 20px; font-weight: bold; color: red; }
-    label { display: block; margin-top: 20px; }
   </style>
 </head>
 <body>
-  <h1>Investor Application (with Face Blacklist Check)</h1>
+  <h1>Investor Application Form 投资者申请表</h1>
   <form id="investorForm" onsubmit="return checkFaceToken(event)">
-    <input type="text" placeholder="Full Name" required><br>
-    <input type="email" placeholder="Email" required><br>
-    <label>Upload ID:</label>
-    <input type="file" required><br>
+    <label>Full Name 姓名:</label>
+    <input type="text" required />
 
-    <label>Upload Face Photo (Required):</label>
-    <input type="file" id="facePhoto" accept="image/*" required><br>
+    <label>Country 国家:</label>
+    <input type="text" required />
 
-    <button type="submit">Submit</button>
+    <label>Phone Number 手机号码:</label>
+    <input type="text" required />
+
+    <label>Email Address 电邮地址:</label>
+    <input type="email" required />
+
+    <label>Telegram ID 用户名:</label>
+    <input type="text" required />
+
+    <label>Estimated Investment Amount 投资金额（预计）:</label>
+    <input type="text" required />
+
+    <label>Referrer Code 介绍人邀请码:</label>
+    <input type="text" required />
+
+    <label>Upload ID Document 上传身份证:</label>
+    <input type="file" required />
+
+    <label>Upload Face Photo 上传自拍照片:</label>
+    <input type="file" id="facePhoto" accept="image/*" required />
+
+    <button type="submit">Submit 提交</button>
     <div id="result"></div>
   </form>
 
@@ -32,11 +51,11 @@
       const resultDiv = document.getElementById('result');
       const file = document.getElementById('facePhoto').files[0];
       if (!file) {
-        resultDiv.innerText = "Please upload a face photo.";
+        resultDiv.innerText = "Please upload a face photo. 请上传自拍照";
         return false;
       }
 
-      resultDiv.innerText = "Checking face...";
+      resultDiv.innerText = "Detecting face... 检测人脸中...";
 
       const formData = new FormData();
       formData.append("api_key", "V2E7Fw194WeXnY34Vf5caVjPVPStfDPU");
@@ -50,7 +69,7 @@
         });
         const detectData = await detectRes.json();
         if (!detectData.faces || detectData.faces.length === 0) {
-          resultDiv.innerText = "No face detected.";
+          resultDiv.innerText = "No face detected. 没有检测到人脸";
           return false;
         }
 
@@ -69,16 +88,16 @@
 
         const searchJson = await searchRes.json();
         if (searchJson.results && searchJson.results.length > 0 && searchJson.results[0].confidence > 80) {
-          resultDiv.innerText = "You are blacklisted. Application blocked.";
+          resultDiv.innerText = "You are blacklisted. 黑名单用户，提交失败";
           return false;
         }
 
         resultDiv.style.color = "green";
-        resultDiv.innerText = "No blacklist detected. Form submitted!";
+        resultDiv.innerText = "Face check passed. 正常可提交。";
         setTimeout(() => document.getElementById('investorForm').submit(), 1000);
       } catch (e) {
         console.error(e);
-        resultDiv.innerText = "Error during face check.";
+        resultDiv.innerText = "Error during face check. 检测失败";
       }
 
       return false;
