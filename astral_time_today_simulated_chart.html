@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>今日红利走势</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f9f9f9;
+      text-align: center;
+    }
+    h2 {
+      margin-bottom: 5px;
+    }
+    #time {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Astral Time 今日红利走势</h2>
+  <div id="time">当前时间：</div>
+  <canvas id="bonusChart" height="100"></canvas>
+
+  <script>
+    function updateTime() {
+      const now = new Date();
+      const timeStr = now.getFullYear() + '-' +
+                      String(now.getMonth() + 1).padStart(2, '0') + '-' +
+                      String(now.getDate()).padStart(2, '0') + ' ' +
+                      String(now.getHours()).padStart(2, '0') + ':' +
+                      String(now.getMinutes()).padStart(2, '0') + ':' +
+                      String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('time').textContent = '当前时间：' + timeStr;
+    }
+    setInterval(updateTime, 1000);
+    updateTime();
+
+    const ctx = document.getElementById('bonusChart').getContext('2d');
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ["00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"],
+        datasets: [{
+          label: '红利浮动值',
+          data: [3.47, 2.26, 1.655, 3.493, 1.683, 2.561, 3.776, 2.47, 1.582, 3.564, 1.683, 2.646, 3.419, 2.507, 1.743, 3.736, 1.678, 2.676, 3.58, 2.397, 1.393, 3.514, 1.525, 2.469],
+          borderColor: 'rgba(75, 192, 192, 1)',
+          backgroundColor: 'rgba(75, 192, 192, 0.15)',
+          pointRadius: 3,
+          borderWidth: 2,
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: '时间（小时）'
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: '红利值'
+            },
+            min: 0,
+            max: 4
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
