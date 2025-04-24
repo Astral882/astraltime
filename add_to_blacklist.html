@@ -1,0 +1,75 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Add to Blacklist</title>
+  <style>
+    body { background: #111; color: #fff; font-family: Arial, sans-serif; text-align: center; padding: 40px; }
+    input, button { margin: 10px; padding: 10px; font-size: 16px; }
+    #result { margin-top: 20px; word-break: break-word; color: #0f0; }
+  </style>
+</head>
+<body>
+  <h1>Add to Blacklist</h1>
+  <p>Upload a face photo to detect and auto-add to blacklist (astral_blacklist)</p>
+  <input type="file" id="image" accept="image/*" />
+  <br />
+  <button onclick="addToBlacklist()">Add Face</button>
+  <div id="result"></div>
+
+  <script>
+    async function addToBlacklist() {
+      const fileInput = document.getElementById('image');
+      const resultDiv = document.getElementById('result');
+      if (!fileInput.files.length) {
+        alert('Please select a file.');
+        return;
+      }
+
+      resultDiv.innerText = 'Detecting face...';
+
+      const formData = new FormData();
+      formData.append('api_key', 'V2E7Fw194WeXnY34Vf5caVjPVPStfDPU');
+      formData.append('api_secret', '4air9mNevxtAVmcsgqfmURHNeNrhaQtl');
+      formData.append('image_file', fileInput.files[0]);
+
+      try {
+        const detectRes = await fetch('https://api-us.faceplusplus.com/facepp/v3/detect', {
+          method: 'POST',
+          body: formData
+        });
+        const detectData = await detectRes.json();
+        if (!detectData.faces || !detectData.faces.length) {
+          resultDiv.innerText = 'No face detected.';
+          return;
+        }
+        const faceToken = detectData.faces[0].face_token;
+
+        resultDiv.innerText = 'Adding to blacklist...';
+
+        const addForm = new FormData();
+        addForm.append('api_key', 'V2E7Fw194WeXnY34Vf5caVjPVPStfDPU');
+        addForm.append('api_secret', '4air9mNevxtAVmcsgqfmURHNeNrhaQtl');
+        addForm.append('outer_id', 'astral_blacklist');
+        addForm.append('face_tokens', faceToken);
+
+        const addRes = await fetch('https://api-us.faceplusplus.com/facepp/v3/faceset/addface', {
+          method: 'POST',
+          body: addForm
+        });
+        const addData = await addRes.json();
+        if (addData.face_added === 1) {
+          resultDiv.innerHTML = `<strong>Success!</strong><br>face_token: ${faceToken} added to astral_blacklist.`;
+        } else {
+          resultDiv.innerText = 'Failed to add face to blacklist.';
+        }
+
+      } catch (err) {
+        console.error(err);
+        resultDiv.innerText = 'Error during request.';
+      }
+    }
+  </script>
+</body>
+</html>
